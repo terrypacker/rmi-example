@@ -4,32 +4,38 @@
 package com.infiniteautomation;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-
-
+/**
+ * Class to register an RMI class 'Processor' that will
+ * execute any command and return the output via RMI.
+ *
+ * @author Terry Packer
+ */
 public class Server implements Processor {
+    
+    //The port that the RMI Registry will run on
+    public static final int PORT = 2001;
+    
     public Server() {}
 
     public static void main(String[] args) {
-        int port = 2001;
         try {
             Server server = new Server();
             Processor stub = (Processor) UnicastRemoteObject.exportObject(server, 0);
-
-
-            Registry registry = LocateRegistry.getRegistry("localhost", port);
+            Registry registry = LocateRegistry.getRegistry("localhost", PORT);
             try {
                 registry.lookup("Processor");
             } catch (NotBoundException e) {
+                //The registry is running but the Processor class was not bound
                 registry.bind("Processor", stub);
             } catch (RemoteException e) {
-                registry = server.startRegistry(port);
+                //The registry isn't running so we need to start it and add the Processor 
+                registry = server.startRegistry(PORT);
                 registry.bind("Processor", stub);
             }
 
@@ -40,12 +46,20 @@ public class Server implements Processor {
         }
     }
 
+    /**
+     * Start the registry on the given port
+     * @param port
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public Registry startRegistry(int port) throws IOException, InterruptedException {
         return LocateRegistry.createRegistry(port);
     }
 
-
-
+    /**
+     * Execute any command
+     */
     public ProcessOutput executeCommand(String... commands)
             throws IOException, InterruptedException {
         ProcessBuilder builder = new ProcessBuilder(commands);

@@ -5,6 +5,7 @@ package com.infiniteautomation;
 
 import java.io.IOException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 
 /**
@@ -12,6 +13,15 @@ import java.rmi.Remote;
  * @author Terry Packer
  */
 public abstract interface Processor extends Remote {
+    
+    /**
+     * Execute the command
+     * @param paramVarArgs
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws RemoteException
+     */
     public abstract ProcessOutput executeCommand(String... paramVarArgs)
-            throws IOException, InterruptedException;
+            throws IOException, InterruptedException, RemoteException;
 }

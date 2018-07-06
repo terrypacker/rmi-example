@@ -16,7 +16,7 @@ public class Client {
     public static void main(String[] args) {
         String host = args.length < 1 ? null : args[0];
         try {
-            Registry registry = LocateRegistry.getRegistry(host, 2001);
+            Registry registry = LocateRegistry.getRegistry(host, Server.PORT);
             Processor stub = (Processor) registry.lookup("Processor");
             ProcessOutput response = stub.executeCommand(new String[] {"ls"});
 
